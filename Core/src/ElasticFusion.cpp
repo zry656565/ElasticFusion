@@ -31,6 +31,7 @@ ElasticFusion::ElasticFusion(const int timeDelta,
                              const float icpThresh,
                              const bool fastOdom,
                              const float fernThresh,
+                             const bool plyBinary,
                              const bool so3,
                              const bool frameToFrameRGB,
                              const std::string fileName)
@@ -77,6 +78,7 @@ ElasticFusion::ElasticFusion(const int timeDelta,
    fastOdom(fastOdom),
    confidenceThreshold(confidence),
    fernThresh(fernThresh),
+   plyBinary(plyBinary),
    so3(so3),
    frameToFrameRGB(frameToFrameRGB),
    depthCutoff(depthCut)
@@ -738,7 +740,7 @@ void ElasticFusion::savePly()
         }
     }
 
-    bool binary = true;
+    bool binary = plyBinary;
 
     // Write header
     fs << "ply";
@@ -935,6 +937,11 @@ void ElasticFusion::setPyramid(const bool & val)
 void ElasticFusion::setFastOdom(const bool & val)
 {
     fastOdom = val;
+}
+
+void ElasticFusion::setPlyBinary(const bool & val)
+{
+    plyBinary = val;
 }
 
 void ElasticFusion::setSo3(const bool & val)

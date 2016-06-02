@@ -52,6 +52,7 @@ class ElasticFusion
                       const float icpThresh = 10,
                       const bool fastOdom = false,
                       const float fernThresh = 0.3095,
+                      const bool plyBinary = true,
                       const bool so3 = true,
                       const bool frameToFrameRGB = false,
                       const std::string fileName = "");
@@ -151,6 +152,8 @@ class ElasticFusion
          * @param val default is false
          */
         void setFastOdom(const bool & val);
+        
+        void setPlyBinary(const bool & val);
 
         /**
          * Turns on or off SO(3) alignment bootstrapping
@@ -321,6 +324,7 @@ class ElasticFusion
         bool fastOdom;
         float confidenceThreshold;
         float fernThresh;
+        bool plyBinary;
         bool so3;
         bool frameToFrameRGB;
         float depthCutoff;

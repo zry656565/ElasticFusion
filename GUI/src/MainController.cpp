@@ -74,6 +74,8 @@ MainController::MainController(int argc, char * argv[])
     timeDelta = 200;
     icpCountThresh = 35000;
     start = 1;
+    
+    plyBinary = !(Parse::get().arg(argc, argv, "-pa", empty) > -1);
     so3 = !(Parse::get().arg(argc, argv, "-nso", empty) > -1);
     end = std::numeric_limits<unsigned short>::max(); //Funny bound, since we predict times in this format really!
 
@@ -195,6 +197,7 @@ void MainController::launch()
                                         icp,
                                         fastOdom,
                                         fernThresh,
+                                        plyBinary,
                                         so3,
                                         frameToFrameRGB,
                                         logReader->getFile());

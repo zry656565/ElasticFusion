@@ -47,6 +47,7 @@ class MainController
         LogReader * logReader;
 
         bool iclnuim;
+        bool plyBinary;
         std::string logFile;
         std::string poseFile;
 
