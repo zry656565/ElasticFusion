@@ -2,3 +2,11 @@ build/
 deps/
 .project
 .cproject
+
+GUIlive.*
+
+# cmake
+CMakeLists.txt
+
+# clion config
+.idea
