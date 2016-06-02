@@ -738,9 +738,11 @@ void ElasticFusion::savePly()
         }
     }
 
+    bool binary = true;
+
     // Write header
     fs << "ply";
-    fs << "\nformat " << "binary_little_endian" << " 1.0";
+    fs << "\nformat " << (binary ? "binary_little_endian" : "ascii") << " 1.0";
 
     // Vertices
     fs << "\nelement vertex "<< validCount;
@@ -760,11 +762,15 @@ void ElasticFusion::savePly()
 
     fs << "\nend_header\n";
 
-    // Close the file
-    fs.close ();
+    std::ofstream fpout;
 
-    // Open file in binary appendable
-    std::ofstream fpout (filename.c_str (), std::ios::app | std::ios::binary);
+    if (binary) {
+        // Close the file
+        fs.close ();
+
+        // Open file in binary appendable
+        fpout.open (filename.c_str (), std::ios::app | std::ios::binary);
+    }
 
     for(unsigned int i = 0; i < globalModel.lastCount(); i++)
     {
@@ -779,35 +785,41 @@ void ElasticFusion::savePly()
             nor[1] *= -1;
             nor[2] *= -1;
 
-            float value;
-            memcpy (&value, &pos[0], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
-
-            memcpy (&value, &pos[1], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
-
-            memcpy (&value, &pos[2], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
-
             unsigned char r = int(col[0]) >> 16 & 0xFF;
             unsigned char g = int(col[0]) >> 8 & 0xFF;
             unsigned char b = int(col[0]) & 0xFF;
 
-            fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
-            fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
-            fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
+            if (binary) {
+                float value;
+                memcpy (&value, &pos[0], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
 
-            memcpy (&value, &nor[0], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+                memcpy (&value, &pos[1], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
 
-            memcpy (&value, &nor[1], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+                memcpy (&value, &pos[2], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
 
-            memcpy (&value, &nor[2], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
+                fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
+                fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
 
-            memcpy (&value, &nor[3], sizeof (float));
-            fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+                memcpy (&value, &nor[0], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+
+                memcpy (&value, &nor[1], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+
+                memcpy (&value, &nor[2], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+
+                memcpy (&value, &nor[3], sizeof (float));
+                fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+            } else {
+                fs << pos[0] << " " << pos[1] << " " << pos[2] << " ";
+                fs << (unsigned int)r << " " << (unsigned int)g << " " << (unsigned int)b << " ";
+                fs << nor[0] << " " << nor[1] << " " << nor[2] << " " << nor[3] << std::endl;
+            }
         }
     }
 
