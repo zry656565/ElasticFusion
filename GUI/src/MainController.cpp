@@ -34,7 +34,13 @@ MainController::MainController(int argc, char * argv[])
     std::string calibrationFile;
     Parse::get().arg(argc, argv, "-cal", calibrationFile);
 
-    Resolution::getInstance(512, 424);
+    bool kinect_v2 = Parse::get().arg(argc, argv, "-k2", empty) > -1;
+
+    if (kinect_v2) {
+        Resolution::getInstance(512, 424);
+    } else {
+        Resolution::getInstance(640, 480);
+    }
 
     if(calibrationFile.length())
     {
@@ -42,7 +48,7 @@ MainController::MainController(int argc, char * argv[])
     }
     else
     {
-        Intrinsics::getInstance(366, 366, 255, 207);
+        Intrinsics::getInstance(528, 528, 320, 240);
     }
 
     Parse::get().arg(argc, argv, "-l", logFile);
