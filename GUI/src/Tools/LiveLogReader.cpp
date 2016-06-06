@@ -23,7 +23,7 @@ LiveLogReader::LiveLogReader(std::string file, bool flipColors)
    lastFrameTime(-1),
    lastGot(-1)
 {
-    std::cout << "Creating live capture... "; std::cout.flush();
+    std::cout << "Creating live capture... " << std::endl; std::cout.flush();
 
 	asus = new OpenNI2Interface(Resolution::getInstance().width(), Resolution::getInstance().height());
 
