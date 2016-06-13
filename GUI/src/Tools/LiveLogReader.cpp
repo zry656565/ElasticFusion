@@ -18,14 +18,15 @@
 
 #include "LiveLogReader.h"
 
-LiveLogReader::LiveLogReader(std::string file, bool flipColors)
+LiveLogReader::LiveLogReader(std::string file, bool flipColors, bool mirror)
  : LogReader(file, flipColors),
    lastFrameTime(-1),
-   lastGot(-1)
+   lastGot(-1),
+   mirror(false)
 {
     std::cout << "Creating live capture... " << std::endl; std::cout.flush();
 
-	asus = new OpenNI2Interface(Resolution::getInstance().width(), Resolution::getInstance().height());
+	asus = new OpenNI2Interface(Resolution::getInstance().width(), Resolution::getInstance().height(), 30, mirror);
 
 	decompressionBufferDepth = new Bytef[Resolution::getInstance().numPixels() * 2];
 

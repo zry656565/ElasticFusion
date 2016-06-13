@@ -59,7 +59,7 @@ MainController::MainController(int argc, char * argv[])
     }
     else
     {
-        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1);
+        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, kinect_v2);
 
         good = ((LiveLogReader *)logReader)->asus->ok();
     }

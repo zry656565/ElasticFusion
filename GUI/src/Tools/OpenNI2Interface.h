@@ -31,10 +31,11 @@
 class OpenNI2Interface
 {
     public:
-        OpenNI2Interface(int inWidth = 640, int inHeight = 480, int fps = 30);
+        OpenNI2Interface(int inWidth = 640, int inHeight = 480, int fps = 30, bool mirror = false);
         virtual ~OpenNI2Interface();
 
         const int width, height, fps;
+        const bool mirror;
 
         void printModes();
         bool findMode(int x, int y, int fps);
