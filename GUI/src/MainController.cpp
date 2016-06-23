@@ -34,9 +34,9 @@ MainController::MainController(int argc, char * argv[])
     std::string calibrationFile;
     Parse::get().arg(argc, argv, "-cal", calibrationFile);
 
-    bool kinect_v2 = Parse::get().arg(argc, argv, "-k2", empty) > -1;
+    bool is_kinect_v2 = Parse::get().arg(argc, argv, "-k2", empty) > -1;
 
-    if (kinect_v2) {
+    if (is_kinect_v2) {
         Resolution::getInstance(512, 424);
     } else {
         Resolution::getInstance(640, 480);
@@ -52,14 +52,20 @@ MainController::MainController(int argc, char * argv[])
     }
 
     Parse::get().arg(argc, argv, "-l", logFile);
+    Parse::get().arg(argc, argv, "-sh", hostname);
+    Parse::get().arg(argc, argv, "-sp", port);
 
     if(logFile.length())
     {
         logReader = new RawLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1);
     }
+    else if (hostname.length() && port > 0)
+    {
+        logReader = new SocketLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, hostname.c_str(), port);
+    }
     else
     {
-        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, kinect_v2);
+        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, is_kinect_v2);
 
         good = ((LiveLogReader *)logReader)->asus->ok();
     }
