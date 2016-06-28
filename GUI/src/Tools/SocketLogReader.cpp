@@ -86,8 +86,9 @@ void SocketLogReader::getNext()
     if (n < 0) error("ERROR reading from socket");
 
     std::cout << "Get One Frame..." << std::endl;
-    memcpy(&decompressionBufferDepth[0], &data[0], Resolution::getInstance().numPixels() * 2);
-    memcpy(&decompressionBufferImage[0], &data[Resolution::getInstance().numPixels() * 2], Resolution::getInstance().numPixels() * 3);
+
+    memcpy(&decompressionBufferImage[0], &data[0], Resolution::getInstance().numPixels() * 3);
+    memcpy(&decompressionBufferDepth[0], &data[Resolution::getInstance().numPixels() * 3], Resolution::getInstance().numPixels() * 2);
 
     // TODO, set timestamp;
 
@@ -97,10 +98,6 @@ void SocketLogReader::getNext()
 
     rgb = (unsigned char *)&decompressionBufferImage[0];
     depth = (unsigned short *)&decompressionBufferDepth[0];
-
-    for (int i = 0; i < Resolution::getInstance().numPixels() * 3; i+= 3) {
-        printf("%d ", rgb[i]);
-    }
 
     if(flipColors)
     {
