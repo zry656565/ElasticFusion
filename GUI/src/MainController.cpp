@@ -33,12 +33,21 @@ MainController::MainController(int argc, char * argv[])
 
     std::string calibrationFile;
     Parse::get().arg(argc, argv, "-cal", calibrationFile);
+    Parse::get().arg(argc, argv, "-sh", hostname);
+    Parse::get().arg(argc, argv, "-sp", port);
 
     bool is_kinect_v2 = Parse::get().arg(argc, argv, "-k2", empty) > -1;
 
-    if (is_kinect_v2) {
+    if(is_kinect_v2)
+    {
         Resolution::getInstance(512, 424);
-    } else {
+    }
+    else if(hostname.length() && port > 0)
+    {
+        Resolution::getInstance(960, 540);
+    }
+    else
+    {
         Resolution::getInstance(640, 480);
     }
 
@@ -52,8 +61,6 @@ MainController::MainController(int argc, char * argv[])
     }
 
     Parse::get().arg(argc, argv, "-l", logFile);
-    Parse::get().arg(argc, argv, "-sh", hostname);
-    Parse::get().arg(argc, argv, "-sp", port);
 
     if(logFile.length())
     {
