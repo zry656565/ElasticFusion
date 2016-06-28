@@ -18,10 +18,11 @@
 
 #include "OpenNI2Interface.h"
 
-OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
+OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps, bool mirror)
  : width(inWidth),
    height(inHeight),
    fps(fps),
+   mirror(mirror),
    initSuccessful(true)
 {
     //Setup
@@ -144,8 +145,8 @@ OpenNI2Interface::OpenNI2Interface(int inWidth, int inHeight, int fps)
                                                   rgbBuffers,
                                                   frameBuffers);
 
-                depthStream.setMirroringEnabled(false);
-                rgbStream.setMirroringEnabled(false);
+                depthStream.setMirroringEnabled(mirror);
+                rgbStream.setMirroringEnabled(mirror);
 
                 device.setDepthColorSyncEnabled(true);
                 device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);

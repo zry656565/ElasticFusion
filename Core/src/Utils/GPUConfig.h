@@ -70,6 +70,11 @@ class GPUConfig
             rgbResMap["GeForce GTX 780 Ti"] = std::pair<int, int>(256, 336);
             so3StepMap["GeForce GTX 780 Ti"] = std::pair<int, int>(160, 64);
 
+            icpStepMap["GeForce GTX 860M"] = std::pair<int, int>(240, 80);
+            rgbStepMap["GeForce GTX 860M"] = std::pair<int, int>(128, 32);
+            rgbResMap["GeForce GTX 860M"] = std::pair<int, int>(128, 352);
+            so3StepMap["GeForce GTX 860M"] = std::pair<int, int>(32, 96);
+
             icpStepMap["GeForce GTX 880M"] = std::pair<int, int>(512, 16);
             rgbStepMap["GeForce GTX 880M"] = std::pair<int, int>(512, 16);
             rgbResMap["GeForce GTX 880M"] = std::pair<int, int>(256, 64);

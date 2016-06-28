@@ -33,8 +33,23 @@ MainController::MainController(int argc, char * argv[])
 
     std::string calibrationFile;
     Parse::get().arg(argc, argv, "-cal", calibrationFile);
+    Parse::get().arg(argc, argv, "-sh", hostname);
+    Parse::get().arg(argc, argv, "-sp", port);
 
-    Resolution::getInstance(640, 480);
+    bool is_kinect_v2 = Parse::get().arg(argc, argv, "-k2", empty) > -1;
+
+    if(is_kinect_v2)
+    {
+        Resolution::getInstance(512, 424);
+    }
+    else if(hostname.length() && port > 0)
+    {
+        Resolution::getInstance(960, 540);
+    }
+    else
+    {
+        Resolution::getInstance(640, 480);
+    }
 
     if(calibrationFile.length())
     {
@@ -51,9 +66,13 @@ MainController::MainController(int argc, char * argv[])
     {
         logReader = new RawLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1);
     }
+    else if (hostname.length() && port > 0)
+    {
+        logReader = new SocketLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, hostname.c_str(), port);
+    }
     else
     {
-        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1);
+        logReader = new LiveLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1, is_kinect_v2);
 
         good = ((LiveLogReader *)logReader)->asus->ok();
     }
@@ -74,6 +93,8 @@ MainController::MainController(int argc, char * argv[])
     timeDelta = 200;
     icpCountThresh = 35000;
     start = 1;
+    
+    plyBinary = !(Parse::get().arg(argc, argv, "-pa", empty) > -1);
     so3 = !(Parse::get().arg(argc, argv, "-nso", empty) > -1);
     end = std::numeric_limits<unsigned short>::max(); //Funny bound, since we predict times in this format really!
 
@@ -195,6 +216,7 @@ void MainController::launch()
                                         icp,
                                         fastOdom,
                                         fernThresh,
+                                        plyBinary,
                                         so3,
                                         frameToFrameRGB,
                                         logReader->getFile());

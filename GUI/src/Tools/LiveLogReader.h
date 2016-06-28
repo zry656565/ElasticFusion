@@ -32,7 +32,7 @@
 class LiveLogReader : public LogReader
 {
 	public:
-		LiveLogReader(std::string file, bool flipColors);
+		LiveLogReader(std::string file, bool flipColors, bool mirror = false);
 
 		virtual ~LiveLogReader();
 
@@ -71,6 +71,7 @@ class LiveLogReader : public LogReader
 	private:
 		int64_t lastFrameTime;
 		int lastGot;
+        bool mirror;
 };
 
 #endif /* LIVELOGREADER_H_ */

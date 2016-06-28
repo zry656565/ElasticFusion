@@ -23,6 +23,7 @@
 #include "Tools/GroundTruthOdometry.h"
 #include "Tools/RawLogReader.h"
 #include "Tools/LiveLogReader.h"
+#include "Tools/SocketLogReader.h"
 
 #ifndef MAINCONTROLLER_H_
 #define MAINCONTROLLER_H_
@@ -47,8 +48,10 @@ class MainController
         LogReader * logReader;
 
         bool iclnuim;
+        bool plyBinary;
         std::string logFile;
         std::string poseFile;
+        std::string hostname;
 
         float confidence,
               depth,
@@ -61,7 +64,8 @@ class MainController
         int timeDelta,
             icpCountThresh,
             start,
-            end;
+            end,
+            port;
 
         bool fillIn,
              openLoop,

@@ -2,3 +2,8 @@ build/
 deps/
 .project
 .cproject
+
+GUIlive.*
+
+# clion config
+.idea
