@@ -15,8 +15,25 @@
  * please email researchcontracts.engineering@imperial.ac.uk.
  *
  */
+
+#include <chrono>
  
 #include "MainController.h"
+
+#define TIMING
+
+#ifdef TIMING
+#define INIT_TIMER(timer) auto timer = std::chrono::high_resolution_clock::now();
+#define START_TIMER(timer)  timer = std::chrono::high_resolution_clock::now();
+#define STOP_TIMER(timer, description)  std::cout << "RUNTIME of " << description << ": " << \
+    std::chrono::duration_cast<std::chrono::milliseconds>( \
+            std::chrono::high_resolution_clock::now()-timer \
+    ).count() << " ms " << std::endl;
+#else
+#define INIT_TIMER(timer)
+#define START_TIMER(timer)
+#define STOP_TIMER(timer, description)
+#endif
 
 MainController::MainController(int argc, char * argv[])
  : good(true),
@@ -231,6 +248,7 @@ void MainController::launch()
 
 void MainController::run()
 {
+    INIT_TIMER(processNext)
     while(!pangolin::ShouldQuit() && !((!logReader->hasMore()) && quiet) && !(eFusion->getTick() == end && quiet))
     {
         if(!gui->pause->Get() || pangolin::Pushed(*gui->step))
@@ -259,6 +277,8 @@ void MainController::run()
                     logReader->getNext();
                 }
                 TOCK("LogRead");
+
+                START_TIMER(processNext)
 
                 if(eFusion->getTick() < start)
                 {
@@ -301,6 +321,8 @@ void MainController::run()
         {
             eFusion->predict();
         }
+
+
 
         TICK("GUI");
 
@@ -573,5 +595,7 @@ void MainController::run()
         }
 
         TOCK("GUI");
+
+        STOP_TIMER(processNext, "Process next")
     }
 }

@@ -13,16 +13,16 @@
 #define TIMING
 
 #ifdef TIMING
-#define INIT_TIMER auto start = std::chrono::high_resolution_clock::now();
-#define START_TIMER  start = std::chrono::high_resolution_clock::now();
-#define STOP_TIMER(name)  std::cout << "RUNTIME of " << name << ": " << \
+#define INIT_TIMER(timer) auto timer = std::chrono::high_resolution_clock::now();
+#define START_TIMER(timer)  timer = std::chrono::high_resolution_clock::now();
+#define STOP_TIMER(timer, description)  std::cout << "RUNTIME of " << description << ": " << \
     std::chrono::duration_cast<std::chrono::milliseconds>( \
-            std::chrono::high_resolution_clock::now()-start \
+            std::chrono::high_resolution_clock::now()-timer \
     ).count() << " ms " << std::endl;
 #else
-#define INIT_TIMER
-#define START_TIMER
-#define STOP_TIMER(name)
+#define INIT_TIMER(timer)
+#define START_TIMER(timer)
+#define STOP_TIMER(timer, description)
 #endif
 
 void error(const char *msg)
@@ -48,6 +48,7 @@ SocketLogReader::SocketLogReader(std::string file, bool flipColors, const char *
 
     std::cout << "Socket connecting... " << std::endl;
 
+    INIT_TIMER(initSock)
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
@@ -71,6 +72,8 @@ SocketLogReader::SocketLogReader(std::string file, bool flipColors, const char *
     if (connect(sockfd, (struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
         error("ERROR connecting");
     std::cout << "Connect succeeded." << std::endl;
+
+    STOP_TIMER(initSock, "Initialize Socket")
 }
 
 SocketLogReader::~SocketLogReader()
@@ -95,6 +98,7 @@ void SocketLogReader::getNext()
     bzero(buffer, sizeof(buffer));
     depthSize = 0;
     imageSize = 0;
+    INIT_TIMER(readData)
     while ((n = read(sockfd, buffer, buffer_len)) > 0) {
         memcpy(&data[len], buffer, n);
         if (depthSize == 0 || imageSize == 0) {
@@ -104,22 +108,25 @@ void SocketLogReader::getNext()
             printf("Image Size: %d, Depth Size: %d\n", imageSize, depthSize);
         }
         len += n;
-        printf("Read %d bytes, totally %d bytes...\n", n, len);
+        // printf("Read %d bytes, totally %d bytes...\n", n, len);
         bzero(buffer,sizeof(buffer));
         if (len >= data_len) break;
     }
     if (n < 0) error("ERROR reading from socket");
 
     std::cout << "Get One Frame..." << std::endl;
+    STOP_TIMER(readData, "Get One Frame")
 
     memcpy(imageReadBuffer, data + 8, imageSize);
     memcpy(depthReadBuffer, data + 8 + imageSize, depthSize);
 
     // TODO, set timestamp;
 
+    INIT_TIMER(sendDone)
     n = write(sockfd,"DONE",4);
     if (n < 0) error("ERROR writing to socket");
     printf("send `DONE` message to server\n");
+    STOP_TIMER(sendDone, "Send Done")
 
     // decompress
     if(depthSize == numPixels * 2)
@@ -138,10 +145,9 @@ void SocketLogReader::getNext()
     }
     else if(imageSize > 0)
     {
-        INIT_TIMER
-        START_TIMER
+        INIT_TIMER(readJpeg)
         jpeg.readData(imageReadBuffer, imageSize, (unsigned char *)&decompressionBufferImage[0]);
-        STOP_TIMER("Read JPEG")
+        STOP_TIMER(readJpeg, "Read JPEG")
     }
     else
     {
